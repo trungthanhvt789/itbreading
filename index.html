@@ -1,40 +1,834 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ITB Analyzer & Technical Procedure Studio</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body { background-color: #020617; color: #f1f5f9; font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #090d16; }
-    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
-    ::-webkit-scrollbar-thumb:hover { background: #0ea5e9; }
-    #doc-preview { background: #ffffff; color: #1e293b; font-family: Arial, sans-serif; font-size: 11pt; line-height: 1.55; }
-    #doc-preview h1 { font-size: 16pt; font-weight: 700; color: #0f172a; border-bottom: 2px solid #0284c7; padding-bottom: 6px; margin: 8px 0 12px; }
-    #doc-preview h2 { font-size: 13pt; font-weight: 700; color: #0369a1; margin: 16px 0 8px; }
-    #doc-preview h3 { font-size: 11.5pt; font-weight: 700; color: #0f172a; background: #f1f5f9; border-left: 3px solid #0284c7; padding: 4px 8px; margin: 12px 0 6px; }
-    #doc-preview h4 { font-size: 11pt; font-weight: 700; color: #334155; margin: 10px 0 4px; }
-    #doc-preview p { margin: 6px 0; }
-    #doc-preview ul { list-style: disc; margin: 6px 0 10px 22px; }
-    #doc-preview ol { list-style: decimal; margin: 6px 0 10px 22px; }
-    #doc-preview li { margin-bottom: 4px; }
-    #doc-preview table { width: 100%; border-collapse: collapse; margin: 10px 0 14px; font-size: 10pt; }
-    #doc-preview th { background: #e2e8f0; color: #0f172a; font-weight: 700; border: 1px solid #94a3b8; padding: 6px 8px; text-align: left; }
-    #doc-preview td { border: 1px solid #cbd5e1; padding: 6px 8px; vertical-align: top; }
-    .tag-tbd { background: #fef3c7; color: #b45309; font-weight: 700; padding: 1px 4px; border-radius: 3px; border: 1px solid #f59e0b; }
-    .tag-h { background: #fee2e2; color: #b91c1c; font-weight: 700; padding: 1px 4px; border-radius: 3px; }
-    .tag-w { background: #e0f2fe; color: #0369a1; font-weight: 700; padding: 1px 4px; border-radius: 3px; }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ITB Analyzer & Technical Procedure Studio</title>
+<style>
+  :root {
+    --navy: #0f172a; --navy-2: #1e293b; --blue: #0284c7; --blue-h: #0369a1;
+    --green: #059669; --amber: #d97706; --red: #e11d48;
+    --bg: #f1f5f9; --card: #ffffff; --border: #cbd5e1; --txt: #0f172a; --muted: #475569;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--txt); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; font-size: 13px; line-height: 1.5; min-height: 100vh; display: flex; flex-direction: column; }
+  .hide { display: none !important; }
+  .topbar { background: var(--navy); color: #fff; padding: 10px 18px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; border-bottom: 2px solid var(--blue); }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .logo { background: var(--blue); color: #fff; font-weight: 800; font-size: 12px; padding: 7px 9px; border-radius: 6px; letter-spacing: 0.5px; }
+  .status-pill { background: var(--navy-2); border: 1px solid #334155; color: #e2e8f0; padding: 4px 10px; border-radius: 99px; font-size: 11px; display: inline-flex; align-items: center; gap: 6px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: #f59e0b; display: inline-block; }
+  .dot.ok { background: #10b981; }
+  button, .btn-lbl { cursor: pointer; font-family: inherit; font-size: 12px; font-weight: 600; padding: 7px 12px; border-radius: 6px; border: 1px solid transparent; display: inline-flex; align-items: center; gap: 5px; transition: 0.15s; }
+  .btn-pri { background: var(--blue); color: #fff; } .btn-pri:hover { background: var(--blue-h); }
+  .btn-grn { background: var(--green); color: #fff; } .btn-grn:hover { opacity: 0.92; }
+  .btn-sec { background: #e2e8f0; color: var(--txt); border-color: #94a3b8; } .btn-sec:hover { background: #cbd5e1; }
+  .btn-dark { background: var(--navy-2); color: #f8fafc; border-color: #475569; } .btn-dark:hover { background: #334155; }
+  .btn-del { background: #ffe4e6; color: var(--red); border-color: #fda4af; }
+  .btn-sm { padding: 4px 8px; font-size: 11px; }
+  input, select, textarea { width: 100%; padding: 6px 9px; font-size: 12px; font-family: inherit; color: var(--txt); background: #fff; border: 1px solid var(--border); border-radius: 6px; outline: none; }
+  input:focus, select:focus, textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 2px rgba(2,132,199,0.15); }
+  .metabar { background: #e2e8f0; border-bottom: 1px solid var(--border); padding: 8px 18px; }
+  .container { max-width: 1280px; width: 100%; margin: 0 auto; }
+  .meta-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+  .meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: 8px; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
+  .lbl { display: block; font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
+  .tabs { background: #fff; border-bottom: 1px solid var(--border); padding: 0 18px; }
+  .tabs-row { display: flex; gap: 4px; overflow-x: auto; max-width: 1280px; margin: 0 auto; }
+  .tab-btn { background: transparent; color: var(--muted); border: none; border-bottom: 3px solid transparent; border-radius: 0; padding: 11px 14px; white-space: nowrap; }
+  .tab-btn:hover { color: var(--blue); }
+  .tab-btn.active { color: var(--blue); border-bottom-color: var(--blue); background: #f0f9ff; }
+  .main { flex: 1; padding: 16px 18px; max-width: 1280px; width: 100%; margin: 0 auto; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 14px; margin-bottom: 14px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+  .card-hd { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+  .card-tt { font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--blue-h); }
+  .dropzone { border: 2px dashed #64748b; border-radius: 10px; padding: 26px 16px; text-align: center; background: #f8fafc; transition: 0.2s; }
+  .dropzone.over { border-color: var(--blue); background: #e0f2fe; }
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px; margin-bottom: 14px; }
+  .infobox { background: #f8fafc; border: 1px solid var(--border); border-radius: 6px; padding: 10px; white-space: pre-line; font-size: 12px; max-height: 230px; overflow-y: auto; }
+  .tbl-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 6px; }
+  table.tbl { width: 100%; border-collapse: collapse; text-align: left; font-size: 12px; }
+  table.tbl th { background: #f1f5f9; color: #334155; font-size: 10px; text-transform: uppercase; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  table.tbl td { padding: 8px 10px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+  .tag { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; background: #e0f2fe; color: #0369a1; }
+  .tag-warn { background: #fef3c7; color: #b45309; } .tag-ok { background: #d1fae5; color: #065f46; }
+  .out-row { display: flex; align-items: center; gap: 6px; padding: 5px 8px; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 6px; background: #f8fafc; }
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 860px) { .split { grid-template-columns: 1fr; } }
+  .pane { background: #fff; border: 1px solid var(--border); border-radius: 8px; display: flex; flex-direction: column; height: 580px; overflow: hidden; }
+  .pane-hd { background: var(--navy); color: #e2e8f0; padding: 8px 12px; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+  #md-ed { flex: 1; border: none; border-radius: 0; resize: none; padding: 12px; font-family: Consolas, monospace; font-size: 12px; line-height: 1.6; background: #0f172a; color: #f1f5f9; }
+  #pv-box { flex: 1; overflow-y: auto; padding: 20px 24px; font-family: Arial, sans-serif; font-size: 11pt; line-height: 1.55; color: #1e293b; }
+  #pv-box h1 { font-size: 15.5pt; color: #0f172a; border-bottom: 2px solid var(--blue); padding-bottom: 5px; margin: 6px 0 12px; }
+  #pv-box h2 { font-size: 13pt; color: var(--blue-h); margin: 14px 0 6px; }
+  #pv-box h3 { font-size: 11.5pt; background: #f1f5f9; border-left: 3px solid var(--blue); padding: 4px 8px; margin: 12px 0 6px; }
+  #pv-box p { margin: 6px 0; } #pv-box ul, #pv-box ol { margin: 6px 0 10px 22px; }
+  #pv-box table { width: 100%; border-collapse: collapse; margin: 10px 0 14px; font-size: 10pt; }
+  #pv-box th { background: #e2e8f0; border: 1px solid #94a3b8; padding: 6px 8px; text-align: left; }
+  #pv-box td { border: 1px solid #cbd5e1; padding: 6px 8px; vertical-align: top; }
+  .toast { background: #065f46; color: #ecfdf5; padding: 9px 14px; border-radius: 6px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; font-weight: 600; }
+  .modal-bg { position: fixed; inset: 0; background: rgba(15,23,42,0.75); z-index: 99; display: flex; align-items: center; justify-content: center; padding: 16px; }
+  .modal-box { background: #fff; border-radius: 8px; max-width: 820px; width: 100%; max-height: 85vh; display: flex; flex-direction: column; overflow: hidden; }
+</style>
 </head>
-<body class="min-h-screen flex flex-col selection:bg-sky-500 selection:text-white">
+<body>
 
   <!-- HEADER -->
-  <header class="bg-slate-900 border-b border-slate-800 px-4 py-3 flex flex-wrap items-center justify-between gap-3 sticky top-0 z-40 shadow-lg">
-    <div class="flex items-center gap-3">
-      <div class="w-9 h-9 rounded-lg bg-sky-500/15 border border-sky-500/40 text-sky-400 flex items-center justify-center font-extrabold text-xs">EPCI</div>
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">EPCI</div>
       <div>
-        <div class="flex items-center gap-2">
-          <h1 class="text-sm sm:text-base font-bold text-white tracking-tight">ITB Analyzer & Technical Procedure Studio</h1>
-          <span class="text-[10px] font-semibold px-2 py-0.5 rounded bg-sky-950 text-sky-400 border
+        <div style="font-size:15px; font-weight:700;">ITB Analyzer & Technical Procedure Studio</div>
+        <div style="font-size:11px; color:#94a3b8;">Bóc tách Hồ sơ thầu đa định dạng, Lập bảng TQ & Xuất Quy trình Kỹ thuật chuẩn Quốc tế</div>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+      <button type="button" id="btn-api" class="btn-dark btn-sm">🔑 Gemini API Key</button>
+      <div class="status-pill"><span id="lib-dot" class="dot"></span><span id="lib-txt">UI Ready • Nạp CDN (0/4)</span></div>
+    </div>
+  </header>
+
+  <!-- API KEY BAR -->
+  <div id="api-bar" class="hide" style="background:#1e293b; color:#f8fafc; padding:10px 18px; border-bottom:1px solid #334155;">
+    <div class="container" style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px;">
+      <span style="font-size:12px;">Nhập <strong>Gemini API Key</strong> để gọi AI Gemini 2.5 Flash (có retry backoff). Nếu để trống, app tự động dùng <em>Local EPCI Smart Parser</em> chạy ngay không cần mạng.</span>
+      <div style="display:flex; gap:6px;">
+        <input id="inp-key" type="password" placeholder="AIzaSy... (Tùy chọn)" style="width:230px;" />
+        <button type="button" id="btn-save-key" class="btn-pri btn-sm">Lưu</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- COLLAPSIBLE PROJECT METADATA -->
+  <section class="metabar">
+    <div class="container">
+      <div class="meta-head">
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <strong style="color:var(--blue-h); font-size:11px; text-transform:uppercase;">Project Metadata:</strong>
+          <strong id="sum-proj">Block 05-1 Subsea Pipeline & PLEM Installation</strong>
+          <span id="sum-doc" class="tag">TOS-EPCI-PRO-001</span>
+          <span id="sum-rev" class="tag tag-ok">Rev A</span>
+        </div>
+        <button type="button" id="btn-meta-toggle" class="btn-sec btn-sm">Thu gọn ▲</button>
+      </div>
+      <div id="meta-wrap" class="meta-grid">
+        <div><label class="lbl">Project Name</label><input id="m-proj" value="Block 05-1 Subsea Pipeline & PLEM Installation" /></div>
+        <div><label class="lbl">Client</label><input id="m-client" value="PetroVietnam Exploration Production (PVEP)" /></div>
+        <div><label class="lbl">Contractor</label><input id="m-contractor" value="Thien Nam Offshore Services (TOS)" /></div>
+        <div><label class="lbl">Document Title</label><input id="m-title" value="Subsea PLEM & Tie-in Spool Installation Procedure" /></div>
+        <div>
+          <label class="lbl">Doc No. & Rev</label>
+          <div style="display:flex; gap:4px;">
+            <input id="m-docno" value="TOS-EPCI-PRO-001" style="width:70%; font-family:monospace;" />
+            <input id="m-rev" value="Rev A" style="width:30%; text-align:center; font-weight:700; color:var(--blue-h);" />
+          </div>
+        </div>
+        <div>
+          <label class="lbl">Ngôn ngữ xuất</label>
+          <select id="m-lang">
+            <option value="Technical English">Technical English</option>
+            <option value="Tiếng Việt">Tiếng Việt</option>
+            <option value="Song ngữ (English - Tiếng Việt)">Song ngữ (Bilingual)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 TABS -->
+  <nav class="tabs">
+    <div class="tabs-row">
+      <button type="button" class="tab-btn active" data-tab="t1">1. Upload & Bóc tách Hồ sơ (<span id="cnt-files">0</span>)</button>
+      <button type="button" class="tab-btn" data-tab="t2">2. Phân tích ITB & Lập bảng TQ</button>
+      <button type="button" class="tab-btn" data-tab="t3">3. Soạn thảo Quy trình (Procedure Studio)</button>
+      <button type="button" class="tab-btn" data-tab="t4">4. Chỉnh sửa & Xuất File Chuẩn</button>
+    </div>
+  </nav>
+
+  <!-- WORKSPACE -->
+  <main class="main">
+    <div id="toast" class="toast hide"><span id="toast-txt"></span><button type="button" id="btn-toast-x" class="btn-sm" style="background:transparent;color:#fff;">✕</button></div>
+
+    <!-- TAB 1 -->
+    <section id="p-t1">
+      <div id="dropzone" class="dropzone card">
+        <div style="font-size:26px; margin-bottom:4px;">📂</div>
+        <div style="font-size:14px; font-weight:700; margin-bottom:4px;">Kéo & thả nhiều file (.pdf, .docx, .xlsx, .txt) vào đây</div>
+        <div style="font-size:12px; color:var(--muted); margin-bottom:12px;">Bóc tách văn bản giữ nguyên <code>[Page X]</code>, chuyển bảng sang Markdown Table & quét Heading mẫu từ Template.</div>
+        <div style="display:flex; justify-content:center; gap:8px; flex-wrap:wrap;">
+          <label for="file-input" class="btn-lbl btn-pri">+ Chọn file từ máy tính<input id="file-input" type="file" multiple accept=".pdf,.docx,.xlsx,.xls,.txt,.csv,.md" class="hide" /></label>
+          <button type="button" id="btn-sample" class="btn-sec">⚡ Nạp Bộ Hồ Sơ ITB Mẫu (4 Files EPCI Đầy Đủ)</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-hd">
+          <span class="card-tt">Danh sách Hồ sơ Đã Bóc tách (<span id="cnt-files-2">0</span> files)</span>
+          <div style="display:flex; gap:6px;">
+            <button type="button" id="btn-clear" class="btn-del btn-sm">Xóa tất cả</button>
+            <button type="button" id="btn-scan" class="btn-pri btn-sm">🔍 Chạy Phân tích ITB Chuyên sâu →</button>
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <thead><tr><th>Tên File</th><th>Loại</th><th>Nhãn Hồ sơ (Document Role)</th><th>Thống kê</th><th>Thao tác</th></tr></thead>
+            <tbody id="tb-files"><tr><td colspan="5" style="text-align:center; padding:20px; color:var(--muted);">Chưa có file nào. Hãy chọn file hoặc bấm <strong>"Nạp Bộ Hồ Sơ ITB Mẫu"</strong> để chạy thử ngay.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2 -->
+    <section id="p-t2" class="hide">
+      <div class="card" style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px;">
+        <div>
+          <div class="card-tt">Báo cáo Phân tích Chuyên sâu ITB (Principal EPCI Engineer)</div>
+          <div id="scan-msg" style="font-size:12px; color:var(--muted);">Đối chiếu chéo tài liệu & trích dẫn nguồn [Tên file - Page X]</div>
+        </div>
+        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+          <button type="button" id="btn-rescan" class="btn-sec btn-sm">🔄 Phân tích lại</button>
+          <button type="button" id="btn-xlsx-tq" class="btn-grn btn-sm">📥 Xuất TQ & Compliance (.xlsx)</button>
+          <button type="button" id="btn-go-t3" class="btn-pri btn-sm">Sang Soạn thảo Quy trình →</button>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <div class="card" style="margin:0;"><div class="card-hd"><span class="card-tt">1. Scope of Work & Battery Limits</span></div><div id="out-sow" class="infobox">Chưa có dữ liệu.</div></div>
+        <div class="card" style="margin:0;"><div class="card-hd"><span class="card-tt">2. Codes, Standards & Điểm Mâu Thuẫn</span></div><div id="out-codes" class="infobox">Chưa có dữ liệu.</div></div>
+        <div class="card" style="margin:0;"><div class="card-hd"><span class="card-tt">3. Deliverables & Schedule Milestones</span></div><div id="out-deliv" class="infobox">Chưa có dữ liệu.</div></div>
+        <div class="card" style="margin:0;"><div class="card-hd"><span class="card-tt" style="color:var(--amber);">4. Technical & Contractual Risks</span></div><div id="out-risks" class="infobox">Chưa có dữ liệu.</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-hd"><span class="card-tt">5A. Bảng Câu hỏi Làm rõ Kỹ thuật (TQ Register)</span><button type="button" id="btn-add-tq" class="btn-sec btn-sm">+ Thêm TQ</button></div>
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <thead><tr><th style="width:75px;">TQ No.</th><th style="width:140px;">Bộ môn</th><th style="width:165px;">Nguồn ITB</th><th>Câu hỏi Làm rõ Kỹ thuật (Technical Clarification)</th><th style="width:180px;">Tác động / Đề xuất</th></tr></thead>
+            <tbody id="tb-tq"><tr><td colspan="5" style="text-align:center; padding:16px; color:var(--muted);">Chưa có dữ liệu TQ.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-hd"><span class="card-tt">5B. Ma trận Tuân thủ Kỹ thuật (Compliance Matrix)</span></div>
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <thead><tr><th style="width:55px;">Mục</th><th style="width:230px;">Yêu cầu Kỹ thuật ITB</th><th style="width:150px;">Nguồn</th><th style="width:130px;">Trạng thái</th><th>Giải trình Kỹ thuật của Nhà thầu</th></tr></thead>
+            <tbody id="tb-comp"><tr><td colspan="5" style="text-align:center; padding:16px; color:var(--muted);">Chưa có dữ liệu Compliance.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3 -->
+    <section id="p-t3" class="hide">
+      <div class="card">
+        <div class="card-hd">
+          <span class="card-tt">Cấu hình Loại Quy trình Kỹ thuật</span>
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button type="button" id="btn-scan-tpl" class="btn-sec btn-sm">📑 Quét Heading từ Company Template</button>
+            <button type="button" id="btn-reset-out" class="btn-sec btn-sm">↺ Nạp Dàn ý Chuẩn Quốc tế</button>
+          </div>
+        </div>
+        <div class="grid2" style="margin:0;">
+          <div>
+            <label class="lbl">Chọn Loại Quy trình</label>
+            <select id="sel-ptype">
+              <option value="Method Statement / Installation Procedure">Method Statement / Installation Procedure</option>
+              <option value="Project Execution Plan (PEP)">Project Execution Plan (PEP)</option>
+              <option value="Pre-commissioning & Commissioning Procedure">Pre-commissioning & Commissioning Procedure</option>
+              <option value="QA/QC & ITP">QA/QC & ITP</option>
+              <option value="HSE Plan & JSA">HSE Plan & JSA</option>
+            </select>
+          </div>
+          <div>
+            <label class="lbl">Chế độ Sinh Nội dung</label>
+            <select id="sel-bmode">
+              <option value="seq">Chạy nối tiếp theo cụm mục (Nội dung sâu, đầy đủ bảng biểu, không cắt cụt)</option>
+              <option value="one">Chạy nhanh 1 lượt</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-hd"><span class="card-tt">Quản lý Dàn ý Quy trình (<span id="cnt-out">9</span> mục — Sửa trực tiếp / Sắp xếp / Xóa)</span></div>
+        <div id="out-list" style="max-height:310px; overflow-y:auto; margin-bottom:10px;"></div>
+        <div style="display:flex; gap:6px; margin-bottom:12px;">
+          <input id="inp-sec" placeholder="Nhập mục dàn ý mới (VD: 10. Contingency & Recovery Plan)..." />
+          <button type="button" id="btn-add-sec" class="btn-sec" style="white-space:nowrap;">+ Thêm mục</button>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px; padding-top:10px; border-top:1px solid var(--border);">
+          <span id="gen-msg" style="font-size:12px; color:var(--blue-h); font-weight:600;">Tự động bám sát thông số ITB & đánh dấu [TBD - To Be Confirmed with Client] cho dữ liệu khuyết.</span>
+          <button type="button" id="btn-gen" class="btn-pri">✍️ Viết Quy trình Hoàn chỉnh →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4 -->
+    <section id="p-t4" class="hide">
+      <div class="card" style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px;">
+        <div>
+          <strong style="font-size:13px;">Xuất bản Tài liệu Kỹ thuật Chuẩn EPCI</strong>
+          <div style="font-size:11px; color:var(--muted);">Cover Page, Revision History, Repeating Header, Arial 11pt, sạch ký hiệu Markdown, chống dính chữ</div>
+        </div>
+        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+          <button type="button" id="btn-docx" class="btn-pri">📄 Tải file Word (.docx)</button>
+          <button type="button" id="btn-xlsx-raci" class="btn-grn">📊 Tải RACI & ITP Checklists (.xlsx)</button>
+          <button type="button" id="btn-copy" class="btn-sec">📋 Copy định dạng chuẩn (Rich Text)</button>
+        </div>
+      </div>
+
+      <div class="split">
+        <div class="pane">
+          <div class="pane-hd">
+            <span>KHUNG SỬA MARKDOWN TRỰC TIẾP</span>
+            <div style="display:flex; gap:4px;">
+              <button type="button" class="btn-dark btn-sm btn-ins" data-ins="[TBD - To Be Confirmed with Client]">+ [TBD]</button>
+              <button type="button" class="btn-dark btn-sm btn-ins" data-ins="[Hold Point - H]">+ [H]</button>
+              <button type="button" class="btn-dark btn-sm btn-ins" data-ins="[Witness Point - W]">+ [W]</button>
+            </div>
+          </div>
+          <textarea id="md-ed" placeholder="Nội dung quy trình Markdown..."></textarea>
+        </div>
+        <div class="pane">
+          <div class="pane-hd"><span>BẢN XEM TRƯỚC VĂN BẢN KỸ THUẬT (ARIAL 11PT)</span><span id="wc-txt">0 từ</span></div>
+          <div id="pv-box"><p style="color:#64748b; text-align:center; margin-top:70px;">Chưa có quy trình. Hãy sang Tab 3 bấm <strong>"Viết Quy trình Hoàn chỉnh"</strong>.</p></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- PREVIEW MODAL -->
+  <div id="modal" class="modal-bg hide">
+    <div class="modal-box">
+      <div style="background:var(--navy); color:#fff; padding:10px 14px; display:flex; justify-content:space-between; align-items:center;">
+        <strong id="mod-title" style="font-size:12px;">Xem trước nội dung bóc tách</strong>
+        <button type="button" id="btn-mod-x" class="btn-dark btn-sm">Đóng ✕</button>
+      </div>
+      <div style="padding:14px; overflow-y:auto; flex:1;"><pre id="mod-body" style="white-space:pre-wrap; font-family:Consolas,monospace; font-size:12px; background:#f8fafc; padding:12px; border:1px solid var(--border); border-radius:6px;"></pre></div>
+    </div>
+  </div>
+
+<script>
+(function() {
+  const apiKey = "";
+  let userKey = "";
+  try { userKey = localStorage.getItem("epci_key") || apiKey; } catch (e) {}
+  document.getElementById("inp-key").value = userKey;
+
+  let files = [];
+  let scan = null;
+  const STD_OUTLINE = [
+    "1. Purpose",
+    "2. Scope",
+    "3. References, Codes & Standards",
+    "4. Definitions & Abbreviations",
+    "5. Roles, Responsibilities & RACI Matrix",
+    "6. Prerequisites, Manpower & Equipment",
+    "7. Step-by-Step Execution Procedure (Acceptance Criteria, Hold Point [H], Witness Point [W])",
+    "8. HSE & Risk Mitigation",
+    "9. Attachments & Checklists"
+  ];
+  let outline = STD_OUTLINE.slice();
+
+  // Nạp ngầm 4 thư viện Office không chặn giao diện
+  const cdn = { pdf: false, mam: false, xls: false, doc: false };
+  function loadJs(url, cb) {
+    const s = document.createElement("script");
+    s.src = url; s.async = true;
+    s.onload = () => cb(true); s.onerror = () => cb(false);
+    document.body.appendChild(s);
+  }
+  function updStatus() {
+    const n = Object.values(cdn).filter(Boolean).length;
+    document.getElementById("lib-dot").className = n === 4 ? "dot ok" : "dot";
+    document.getElementById("lib-txt").textContent = n === 4 ? "Ready (4/4 Office Libs)" : "Ready (" + n + "/4 CDN)";
+  }
+  setTimeout(() => {
+    loadJs("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js", ok => {
+      if (ok && window.pdfjsLib) { window.pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"; cdn.pdf = true; }
+      updStatus();
+    });
+    loadJs("https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js", ok => { cdn.mam = ok; updStatus(); });
+    loadJs("https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js", ok => { cdn.xls = ok; updStatus(); });
+    loadJs("https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js", ok => { cdn.doc = ok; updStatus(); });
+  }, 50);
+
+  function esc(s) { return String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+  function notify(msg) {
+    const t = document.getElementById("toast");
+    document.getElementById("toast-txt").textContent = msg;
+    t.classList.remove("hide");
+    clearTimeout(notify._t);
+    notify._t = setTimeout(() => t.classList.add("hide"), 4000);
+  }
+  function meta() {
+    return {
+      proj: document.getElementById("m-proj").value.trim(),
+      client: document.getElementById("m-client").value.trim(),
+      con: document.getElementById("m-contractor").value.trim(),
+      title: document.getElementById("m-title").value.trim(),
+      docNo: document.getElementById("m-docno").value.trim(),
+      rev: document.getElementById("m-rev").value.trim(),
+      lang: document.getElementById("m-lang").value
+    };
+  }
+  function goTab(id) {
+    ["t1", "t2", "t3", "t4"].forEach(k => document.getElementById("p-" + k).classList.toggle("hide", k !== id));
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.toggle("active", b.dataset.tab === id));
+  }
+
+  async function askGemini(sys, usr) {
+    const k = (document.getElementById("inp-key").value || userKey || "").trim();
+    const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=" + encodeURIComponent(k);
+    const delays = [1000, 2000, 4000];
+    for (let i = 0; i <= delays.length; i++) {
+      try {
+        const r = await fetch(url, {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ systemInstruction: { parts: [{ text: sys }] }, contents: [{ role: "user", parts: [{ text: usr }] }] })
+        });
+        if (r.ok) { const d = await r.json(); return d.candidates?.[0]?.content?.parts?.[0]?.text || null; }
+        if (r.status !== 429 && r.status < 500) break;
+      } catch (e) { if (i === delays.length) return null; }
+      if (i < delays.length) await new Promise(res => setTimeout(res, delays[i]));
+    }
+    return null;
+  }
+
+  // TAB 1: INGESTION
+  async function readOneFile(file) {
+    const ext = (file.name.split(".").pop() || "").toLowerCase();
+    let text = "", pages = 1, role = "Technical Spec";
+    if (/sow|scope|itb/i.test(file.name)) role = "Main SOW";
+    else if (/data|equip|list/i.test(file.name) || ext === "xlsx" || ext === "xls") role = "Datasheet / Equipment List";
+    else if (/template|form|proc/i.test(file.name)) role = "Company Procedure Template";
+
+    if (ext === "pdf" && window.pdfjsLib) {
+      const buf = await file.arrayBuffer();
+      const pdf = await window.pdfjsLib.getDocument({ data: buf, disableWorker: true }).promise;
+      pages = pdf.numPages;
+      const out = [];
+      for (let p = 1; p <= pages; p++) {
+        const pg = await pdf.getPage(p);
+        const tc = await pg.getTextContent();
+        out.push("[Page " + p + "]\n" + tc.items.map(i => i.str).join(" "));
+      }
+      text = out.join("\n\n");
+    } else if (ext === "docx" && window.mammoth) {
+      const buf = await file.arrayBuffer();
+      const res = await window.mammoth.convertToHtml({ arrayBuffer: buf });
+      const div = document.createElement("div"); div.innerHTML = res.value;
+      div.querySelectorAll("table").forEach(t => {
+        let md = "\n";
+        Array.from(t.querySelectorAll("tr")).forEach((tr, rI) => {
+          const cs = Array.from(tr.querySelectorAll("th,td")).map(c => c.textContent.replace(/\s+/g, " ").trim());
+          if (cs.length) { md += "| " + cs.join(" | ") + " |\n"; if (rI === 0) md += "| " + cs.map(() => "---").join(" | ") + " |\n"; }
+        });
+        t.replaceWith(document.createTextNode(md + "\n"));
+      });
+      text = "[Page 1]\n" + (div.innerText || div.textContent || "");
+      pages = Math.max(1, Math.ceil(text.length / 2800));
+    } else if ((ext === "xlsx" || ext === "xls") && window.XLSX) {
+      const buf = await file.arrayBuffer();
+      const wb = window.XLSX.read(buf, { type: "array" });
+      pages = wb.SheetNames.length;
+      text = wb.SheetNames.map((sn, idx) => {
+        const rows = window.XLSX.utils.sheet_to_json(wb.Sheets[sn], { header: 1, defval: "" }).filter(r => r.some(c => String(c).trim() !== "")).slice(0, 80);
+        let md = "[Page " + (idx + 1) + " - Sheet: " + sn + "]\n";
+        rows.forEach((r, rI) => {
+          const cs = r.map(v => String(v).replace(/\|/g, "/").trim());
+          md += "| " + cs.join(" | ") + " |\n";
+          if (rI === 0) md += "| " + cs.map(() => "---").join(" | ") + " |\n";
+        });
+        return md;
+      }).join("\n\n");
+    } else {
+      text = "[Page 1]\n" + (await file.text());
+    }
+    return { name: file.name, ext: ext.toUpperCase() || "TXT", kb: Math.max(1, Math.round(file.size / 1024)), role, pages, text };
+  }
+
+  async function addFiles(list) {
+    const arr = Array.from(list || []);
+    if (!arr.length) return;
+    for (const f of arr) {
+      try {
+        const d = await readOneFile(f);
+        files.push(d);
+        if (d.role === "Company Procedure Template") scanTemplate(d, true);
+      } catch (e) { alert("Lỗi đọc file " + f.name + ": " + e.message); }
+    }
+    drawFiles();
+    notify("Đã bóc tách thành công " + arr.length + " file!");
+  }
+
+  function loadSamples() {
+    files = [
+      { name: "ITB_01_Main_SOW_Subsea_PLEM.pdf", ext: "PDF", kb: 620, role: "Main SOW", pages: 3, text: "[Page 1]\n1. SCOPE OF WORK: Mobilize DP2 Diving Support Vessel (DSV), install 01x Subsea PLEM at 48.5m LAT, fabricate & tie-in 02x 10-inch rigid spools, execute flooding, gauging, hydrotesting & N2 purging.\n[Page 2]\n2. BATTERY LIMITS & MATERIALS:\n- Upstream: CPP Riser Flange FL-101 (10\" ANSI 1500# RTJ).\n- Downstream: PLEM Hub FL-202.\n- Company Free-Issue (FIM): PLEM structure (18.4 MT), 10\" API 5L X65 3LPE pipes.\n- Contractor Supply: DP2 DSV, rigging, Inconel 625 R53 RTJ gaskets, ASTM A193 B7M PTFE stud bolts, bolt tensioners, test spread.\n[Page 3]\n3. SCHEDULE & LD: IFA Procedures within 14 days of Award (01-Nov-2026) | Vessel Mob: 18-Nov-2026 | RFC: 28-Dec-2026 | Delay LD: 1.5%/day (max 10%)." },
+      { name: "ITB_02_Subsea_Installation_Spec.pdf", ext: "PDF", kb: 480, role: "Technical Spec", pages: 2, text: "[Page 1]\n1. STANDARDS: DNV-ST-F101, DNV-ST-N001, ASME B31.8, API RP 1111, IMCA D014.\n[Page 2]\n2. TOLERANCES & TESTING: PLEM landing ±0.50m pos, ±2.0 deg heading, ±1.5 deg level. Subsea flange gap <= ±1.5 mm. Splash-zone lift limit Hs <= 1.8m. Hydrotest: 185 barg for 24h minimum." },
+      { name: "ITB_03_Equipment_Datasheet.xlsx", ext: "XLSX", kb: 135, role: "Datasheet / Equipment List", pages: 1, text: "[Page 1 - Sheet: Datasheet]\n| Tag | Description | Size / Mass | Material | Test Pressure |\n| --- | --- | --- | --- | --- |\n| PLEM-01 | Subsea Manifold | 4.8x3.6x2.9m (18.4 MT) | S355G10+M | 192 barg |\n| SPL-101 | Tie-in Spool #1 | 10\" NB x 15.9mm (~22m) | API 5L X65 | 192 barg |\n| SPL-102 | Tie-in Spool #2 | 10\" NB x 15.9mm (~14m) | API 5L X65 | 192 barg |" },
+      { name: "TOS_Company_Procedure_Template.docx", ext: "DOCX", kb: 90, role: "Company Procedure Template", pages: 1, text: "[Page 1]\n1. Purpose & Project Overview\n2. Scope of Work & Battery Limits\n3. References, Codes & Standards\n4. Definitions & Abbreviations\n5. Roles, Responsibilities & RACI Matrix\n6. Prerequisites, Manpower & Marine Spread Equipment\n7. Step-by-Step Execution Procedure (Hold Point [H] & Witness Point [W])\n8. HSE Management, SIMOPS & Risk Mitigation\n9. Attachments, ITP & Sign-off Checklists" }
+    ];
+    scanTemplate(files[3], true);
+    drawFiles();
+    notify("Đã nạp 4 files ITB mẫu (Main SOW, Spec, Datasheet, Procedure Template)!");
+  }
+
+  function drawFiles() {
+    document.getElementById("cnt-files").textContent = files.length;
+    document.getElementById("cnt-files-2").textContent = files.length;
+    const tb = document.getElementById("tb-files");
+    if (!files.length) { tb.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--muted);">Chưa có file nào.</td></tr>'; return; }
+    const roles = ["Main SOW", "Technical Spec", "Datasheet / Equipment List", "Company Procedure Template"];
+    tb.innerHTML = files.map((f, i) => `
+      <tr>
+        <td><strong>${esc(f.name)}</strong><div style="font-size:11px;color:var(--muted);">${f.kb} KB</div></td>
+        <td><span class="tag">${esc(f.ext)}</span></td>
+        <td><select class="f-role" data-i="${i}" style="max-width:230px;">${roles.map(r => `<option value="${r}" ${f.role === r ? "selected" : ""}>${r}</option>`).join("")}</select></td>
+        <td><span class="tag tag-ok">${f.pages} trang</span> • ${f.text.length.toLocaleString()} ký tự</td>
+        <td style="white-space:nowrap;">
+          <button type="button" class="btn-sec btn-sm f-prev" data-i="${i}">👁 Preview</button>
+          <button type="button" class="btn-del btn-sm f-del" data-i="${i}">✕</button>
+        </td>
+      </tr>`).join("");
+    tb.querySelectorAll(".f-role").forEach(el => el.addEventListener("change", function() {
+      files[this.dataset.i].role = this.value;
+      if (this.value === "Company Procedure Template") scanTemplate(files[this.dataset.i], false);
+    }));
+    tb.querySelectorAll(".f-prev").forEach(el => el.addEventListener("click", function() {
+      const f = files[this.dataset.i];
+      document.getElementById("mod-title").textContent = f.name + " (" + f.role + " - " + f.pages + " trang)";
+      document.getElementById("mod-body").textContent = f.text;
+      document.getElementById("modal").classList.remove("hide");
+    }));
+    tb.querySelectorAll(".f-del").forEach(el => el.addEventListener("click", function() { files.splice(Number(this.dataset.i), 1); drawFiles(); }));
+  }
+
+  // TAB 2: DEEP SCAN
+  async function runScan() {
+    if (!files.length) { alert("Hãy chọn file hoặc bấm 'Nạp Bộ Hồ Sơ ITB Mẫu' ở Tab 1 trước!"); return; }
+    goTab("t2");
+    document.getElementById("scan-msg").textContent = "⏳ Đang đối chiếu chéo các tài liệu ITB...";
+    const sowF = files.find(f => f.role === "Main SOW") || files[0];
+    const specF = files.find(f => f.role === "Technical Spec") || sowF;
+    const dsF = files.find(f => f.role === "Datasheet / Equipment List") || sowF;
+
+    let ai = null;
+    const k = (document.getElementById("inp-key").value || userKey || "").trim();
+    if (k) {
+      const ctx = files.map(f => `=== ${f.name} (${f.role}) ===\n${f.text}`).join("\n\n").slice(0, 30000);
+      const raw = await askGemini(
+        "You are a Principal EPCI Project Engineer. Cross-check ITB files, highlight conflicts, cite [File - Page X]. Output valid JSON only.",
+        `Language: ${meta().lang}. Keys: "sow","codes","deliverables","risks", "tqList":[{"id","discipline","ref","question","impact"}], "compList":[{"no","req","ref","status","note"}].\n${ctx}`
+      );
+      if (raw) { try { ai = JSON.parse(raw.replace(/```json/gi, "").replace(/```/g, "").trim()); } catch (e) {} }
+    }
+
+    scan = ai || {
+      sow: `• Phạm vi chính: Huy động tàu DSV DP2, cẩu hạ 01 cụm PLEM (18.4 MT) ở độ sâu 48.5m LAT, đo Metrology & lắp 02 đoạn Spool 10-inch, chạy thử flooding, gauging, hydrotest & N2 purging [${sowF.name} - Page 1].\n• Battery Limits: Từ mặt bích Riser FL-101 (10" ANSI 1500# RTJ) giàn CPP đến PLEM Hub FL-202 [${sowF.name} - Page 2].\n• Vật tư CĐT cấp (FIM): Cụm PLEM-01 & ống 10" API 5L X65 3LPE. Nhà thầu cấp: Tàu DSV DP2, cáp ma ní, gioăng Inconel 625 R53, bu-lông B7M phủ PTFE, thiết bị căng bu-lông & thử áp [${sowF.name} - Page 2].`,
+      codes: `• Tiêu chuẩn áp dụng: DNV-ST-F101, DNV-ST-N001, ASME B31.8, API RP 1111, IMCA D014 [${specF.name} - Page 1].\n• ⚠️ CẢNH BÁO MÂU THUẪN GIỮA CÁC TÀI LIỆU: Spec quy định áp suất thử thủy tĩnh 185 barg trong 24h [${specF.name} - Page 2], nhưng Datasheet ghi áp suất thử 192 barg [${dsF.name} - Page 1]. Cần phát hành TQ-001 làm rõ ngay!`,
+      deliverables: `• Hồ sơ phải nộp: Installation Method Statement, Splash-Zone Lift Analysis, 3D Metrology Procedure, Hydrotest & Purging Procedure, SIMOPS Plan, As-Built MRB [${sowF.name} - Page 3].\n• Tiến độ: Nộp IFA 14 ngày sau Award (01-Nov-2026) | Mobilization: 18-Nov-2026 | Ready For Commissioning (RFC): 28-Dec-2026 [${sowF.name} - Page 3].`,
+      risks: `• Dung sai khắt khe: Đích hạ PLEM ±0.50m, góc xoay ±2.0°, độ nghiêng ±1.5°; khe hở mặt bích ngầm <= ±1.5 mm [${specF.name} - Page 2].\n• Thiết bị & Thời tiết: Bắt buộc tàu DP2 cẩu AHC; giới hạn sóng qua Splash Zone Hs <= 1.8m vào mùa gió chướng [${specF.name} - Page 2].\n• Rủi ro Hợp đồng & SIMOPS: Phạt trễ LD 1.5%/ngày (tối đa 10%); cẩu nặng & lặn sát giàn đang khai thác khí sống [${sowF.name} - Page 3].`,
+      tqList: [
+        { id: "TQ-001", discipline: "Piping / Pre-comm", ref: `[${specF.name} - Page 2] & [${dsF.name} - Page 1]`, question: "Mâu thuẫn áp suất thử thủy tĩnh: Spec ghi 185 barg (24h) nhưng Datasheet ghi 192 barg. Đề nghị Chủ đầu tư xác nhận giá trị áp suất thử chuẩn.", impact: "Ảnh hưởng chọn van an toàn & bích mù thử áp" },
+        { id: "TQ-002", discipline: "Subsea Materials", ref: `[${sowF.name} - Page 2]`, question: "Đề nghị xác nhận bích mù thử áp (Test Blinds) và 200% gioăng dự phòng Inconel 625 R53 cho đầu PLEM Free-Issue do Chủ đầu tư hay Nhà thầu cung cấp?", impact: "Chi phí mua sắm vật tư Long-lead" },
+        { id: "TQ-003", discipline: "Marine / Contractual", ref: `[${sowF.name} - Page 3] & [${specF.name} - Page 2]`, question: "Giới hạn sóng hạ cẩu Hs <= 1.8m trong tháng 11-12 có rủi ro chờ thời tiết cao. Xin xác nhận thời gian Weather Standby được miễn trừ khỏi phạt LD 1.5%/ngày.", impact: "Rủi ro thương mại & chi phí tàu DSV" },
+        { id: "TQ-004", discipline: "Subsea Tie-in", ref: `[${specF.name} - Page 2]`, question: "Để đáp ứng dung sai ghép bích ±1.5 mm ở độ sâu 48.5m, đề nghị chấp thuận dùng Swivel Ring Flange tại 01 đầu mỗi Spool.", impact: "Đảm bảo kín khít & giảm thời gian lặn" }
+      ],
+      compList: [
+        { no: "1", req: "Tuân thủ DNV-ST-F101, DNV-ST-N001 & ASME B31.8", ref: `[${specF.name} - Page 1]`, status: "Comply", note: "Tuân thủ 100% quy chuẩn thiết kế, lắp đặt ngầm và MWS." },
+        { no: "2", req: "Tàu DSV DP2 & hệ thống lặn chuẩn IMCA D014", ref: `[${sowF.name} - Page 1]`, status: "Comply", note: "Bố trí tàu DP2 cẩu AHC 250T có chứng chỉ IMCA hợp lệ." },
+        { no: "3", req: "Dung sai căn chỉnh mặt bích ngầm ±1.5 mm", ref: `[${specF.name} - Page 2]`, status: "Clarify (TQ-004)", note: "Đo 3D Metrology kết hợp đề xuất Swivel Flange." },
+        { no: "4", req: "Thử thủy tĩnh giữ áp 24h (185 / 192 barg)", ref: `[${specF.name} - Page 2]`, status: "Clarify (TQ-001)", note: "Đáp ứng giữ áp 24h; chờ xác nhận mức áp suất chuẩn." }
+      ]
+    };
+    drawScan();
+    document.getElementById("scan-msg").textContent = "✅ Đã hoàn tất phân tích đối chiếu " + files.length + " tài liệu dự án.";
+    notify("Phân tích ITB & lập bảng TQ hoàn tất!");
+  }
+
+  function drawScan() {
+    if (!scan) return;
+    document.getElementById("out-sow").textContent = scan.sow;
+    document.getElementById("out-codes").textContent = scan.codes;
+    document.getElementById("out-deliv").textContent = scan.deliverables;
+    document.getElementById("out-risks").textContent = scan.risks;
+    document.getElementById("tb-tq").innerHTML = (scan.tqList || []).map(t => `
+      <tr><td><strong>${esc(t.id)}</strong></td><td>${esc(t.discipline)}</td><td><span class="tag">${esc(t.ref)}</span></td><td>${esc(t.question)}</td><td><span class="tag tag-warn">${esc(t.impact)}</span></td></tr>`).join("");
+    document.getElementById("tb-comp").innerHTML = (scan.compList || []).map(c => `
+      <tr><td><strong>${esc(c.no)}</strong></td><td><strong>${esc(c.req)}</strong></td><td><span class="tag">${esc(c.ref)}</span></td><td><span class="tag ${/clarify/i.test(c.status) ? "tag-warn" : "tag-ok"}">${esc(c.status)}</span></td><td>${esc(c.note)}</td></tr>`).join("");
+  }
+
+  // TAB 3: OUTLINE & PROCEDURE GENERATION
+  function scanTemplate(fObj, silent) {
+    const t = fObj || files.find(f => f.role === "Company Procedure Template");
+    if (!t) { if (!silent) alert("Chưa có file gắn nhãn 'Company Procedure Template' ở Tab 1!"); return; }
+    const hs = t.text.split(/\r?\n/).map(l => l.trim()).filter(l => /^(\d+(\.\d+)*)\s+[A-Za-zÀ-ỹ]/.test(l) && l.length < 110);
+    if (hs.length >= 3) { outline = hs.slice(0, 16); drawOutline(); if (!silent) notify("Đã nạp " + outline.length + " đề mục từ Company Template!"); }
+  }
+
+  function drawOutline() {
+    document.getElementById("cnt-out").textContent = outline.length;
+    const box = document.getElementById("out-list");
+    box.innerHTML = outline.map((s, i) => `
+      <div class="out-row">
+        <strong style="color:var(--blue-h);min-width:24px;">#${i + 1}</strong>
+        <input class="o-inp" data-i="${i}" value="${esc(s)}" style="border-color:transparent;background:transparent;" />
+        <button type="button" class="btn-sec btn-sm o-up" data-i="${i}">↑</button>
+        <button type="button" class="btn-sec btn-sm o-dn" data-i="${i}">↓</button>
+        <button type="button" class="btn-del btn-sm o-rm" data-i="${i}">✕</button>
+      </div>`).join("");
+    box.querySelectorAll(".o-inp").forEach(el => el.addEventListener("input", function() { outline[this.dataset.i] = this.value; }));
+    box.querySelectorAll(".o-up").forEach(el => el.addEventListener("click", function() { const i = Number(this.dataset.i); if (i > 0) { [outline[i - 1], outline[i]] = [outline[i], outline[i - 1]]; drawOutline(); } }));
+    box.querySelectorAll(".o-dn").forEach(el => el.addEventListener("click", function() { const i = Number(this.dataset.i); if (i < outline.length - 1) { [outline[i + 1], outline[i]] = [outline[i], outline[i + 1]]; drawOutline(); } }));
+    box.querySelectorAll(".o-rm").forEach(el => el.addEventListener("click", function() { outline.splice(Number(this.dataset.i), 1); drawOutline(); }));
+  }
+
+  async function generateProcedure() {
+    const m = meta();
+    const pType = document.getElementById("sel-ptype").value;
+    const msg = document.getElementById("gen-msg");
+    msg.textContent = "⏳ Đang biên soạn quy trình kỹ thuật bám sát ITB...";
+    let md = "";
+    const k = (document.getElementById("inp-key").value || userKey || "").trim();
+
+    if (k) {
+      const ctx = files.map(f => `[${f.name}]:\n${f.text.slice(0, 6000)}`).join("\n\n");
+      const sys = `Write a detailed EPCI ${pType} in ${m.lang}. Include Markdown tables, ITB acceptance criteria, Hold Point [H], Witness Point [W], and [TBD - To Be Confirmed with Client] for missing data.`;
+      if (document.getElementById("sel-bmode").value === "seq" && outline.length > 4) {
+        const mid = Math.ceil(outline.length / 2);
+        const p1 = await askGemini(sys, `Write sections:\n${outline.slice(0, mid).join("\n")}\n\nITB:\n${ctx}`);
+        const p2 = await askGemini(sys, `Continue writing sections:\n${outline.slice(mid).join("\n")}\n\nITB:\n${ctx}`);
+        if (p1 && p2) md = `# ${m.title}\n\n` + p1 + "\n\n" + p2;
+      } else {
+        md = await askGemini(sys, `Write all sections:\n${outline.join("\n")}\n\nITB:\n${ctx}`) || "";
+      }
+    }
+
+    if (!md) {
+      md = `# ${m.title}\n\n**Project:** ${m.project} | **Client:** ${m.client} | **Contractor:** ${m.contractor}\n**Document No.:** ${m.docNo} | **Revision:** ${m.rev} | **Type:** ${pType}\n\n---\n\n`;
+      outline.forEach(sec => {
+        const s = sec.toLowerCase();
+        md += `## ${sec}\n\n`;
+        if (/purpose/.test(s)) md += `This technical procedure defines the step-by-step execution methodology, engineering controls, and acceptance criteria for **${m.title}** under **${m.project}**, strictly complying with **${m.client}** ITB specifications and Marine Warranty Surveyor (MWS) approval.\n\n`;
+        else if (/scope/.test(s)) md += `- Pre-lay ROV survey at **48.5m LAT** water depth.\n- Overboarding, splash-zone transit (**Hs <= 1.8m**), and seabed installation of **01x Subsea PLEM (18.4 MT)**.\n- Subsea 3D Metrology and tie-in of **02x 10-inch API 5L X65 rigid spools (SPL-101, SPL-102)** between Riser Flange **FL-101** and PLEM Hub **FL-202**.\n- Design target coordinates: [TBD - To Be Confirmed with Client AFC Alignment Sheet].\n\n`;
+        else if (/reference|code/.test(s)) md += `| Code / Standard | Title | Scope of Application |\n| --- | --- | --- |\n| DNV-ST-F101 | Submarine Pipeline Systems | Subsea tie-in tolerances, NDT & hydrotest |\n| DNV-ST-N001 | Marine Operations and Marine Warranty | Subsea lift rigging & weather criteria |\n| ASME B31.8 | Gas Transmission Piping Systems | Flange assembly & pressure testing |\n| IMCA D014 | Offshore Diving Code of Practice | DP2 diving safety & umbilical control |\n\n`;
+        else if (/definition/.test(s)) md += `- **Hold Point [H]:** Mandatory stop stage requiring formal written release by Client / MWS.\n- **Witness Point [W]:** Inspection stage with 24-hour prior notice to Client Representative.\n\n`;
+        else if (/raci|role/.test(s)) md += `| Execution Activity | OCM | Lead Field Eng. | Diving / ROV Supt. | QA/QC & HSE | Client / MWS |\n| --- | --- | --- | --- | --- | --- |\n| Vessel Readiness & MWS CoA | A | R | C | R | H |\n| 500m Zone Entry & SIMOPS Permit | A | C | C | R | H |\n| PLEM Overboarding & Seabed Landing | A | R | R | C | W |\n| Subsea Flange Tensioning & 24h Hydrotest | A | R | R | R | H |\n\n`;
+        else if (/prerequisite|equipment/.test(s)) md += `| Equipment / Spread | Minimum Technical Requirement | Redundancy | Certification |\n| --- | --- | --- | --- |\n| DP2 Diving Support Vessel | Class 2 DP, 250T AHC Crane | Full DP2 | Valid IMCA eCMID & MWS CoA [Hold Point - H] |\n| Subsea Bolt Tensioning Kit | 1500 bar hydraulic pump + 100% stud heads | 100% Standby | Valid < 3 months calibration |\n| Hydrotest Spread | 300 barg triplex pump + digital P/T logger | Dual gauges | Valid 3rd-party calibration |\n\n`;
+        else if (/step|execution/.test(s)) md += `### 7.1 SIMOPS Entry & Pre-Installation Survey\n1. Obtain signed **500m Safety Zone & SIMOPS Permit** from CPP OIM [Hold Point - H].\n2. Deploy ROV to verify seabed levelness and zero debris at **-48.5m LAT** [Witness Point - W].\n\n### 7.2 PLEM Overboarding & Seabed Installation\n1. Verify forecast confirms **Hs <= 1.8m** and seabed current <= [TBD - To Be Confirmed with Client] [Hold Point - H].\n2. Perform 300mm deck trial lift of **PLEM-01 (18.4 MT)**; lower continuously through splash zone and land inside target box. **Acceptance Criteria:** Position **<= ±0.50m**, Heading **<= ±2.0°**, Levelness **<= ±1.5°** [Hold Point - H].\n\n### 7.3 Subsea Metrology, Spool Tie-in & 24h Hydrotest\n1. Perform 3D acoustic metrology; weld closure joint on deck with **100% AUT/RT** pass [Hold Point - H].\n2. Fit new **Inconel 625 R53 RTJ gaskets**, verify flange gap **<= ±1.5 mm**, and tension stud bolts in 4 passes (30% -> 60% -> 100% -> check) at hydraulic pressure [TBD - To Be Confirmed with Client] [Hold Point - H].\n3. Flood with treated seawater and hold hydrostatic pressure at **185 barg** *(subject to TQ-001 vs. 192 barg Datasheet)* for **24 hours**. **Acceptance Criteria:** ΔP <= ±0.2 bar (temp compensated) and **zero ROV-visible leakage** [Hold Point - H].\n\n`;
+        else if (/hse|risk/.test(s)) md += `| Activity | Hazard | Control & Mitigation | Residual Risk |\n| --- | --- | --- | --- |\n| 18.4 MT Subsea Lift near CPP | Snap load / Dropped object | Enforce Hs <= 1.8m, AHC mode, crane slew limit, MWS sign-off | Low |\n| 1500 bar Bolt Tensioning | Hose whip / Diver pinch point | Whip-checks, ROV continuous umbilical monitoring | Low |\n\n`;
+        else md += `| ITP No. | Inspection Stage | Acceptance Criteria | Contractor | Client | MWS |\n| --- | --- | --- | --- | --- | --- |\n| ITP-01 | Rigging & Crane Pre-Lift | Valid < 6-month load test per DNV-ST-N001 | H | W | H |\n| ITP-02 | PLEM As-Laid Survey | ±0.50m pos, ±2.0° heading, ±1.5° level | H | H | W |\n| ITP-03 | Flange Tensioning & 24h Hydrotest | Gap <= ±1.5 mm, 24h zero leak | H | H | W |\n\n`;
+      });
+    }
+
+    document.getElementById("md-ed").value = md;
+    drawPreview();
+    msg.textContent = "✅ Đã hoàn tất biên soạn quy trình!";
+    goTab("t4");
+    notify("Đã sinh xong Quy trình Kỹ thuật hoàn chỉnh!");
+  }
+
+  // TAB 4: PREVIEW & EXPORTS
+  function stripMd(s) { return String(s || "").replace(/\*\*(.+?)\*\*/g, "$1").replace(/\*(.+?)\*/g, "$1").replace(/`(.+?)`/g, "$1").replace(/^#+\s*/, "").replace(/\s+/g, " ").trim(); }
+  function inlineHtml(s) {
+    return esc(s).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>").replace(/\[TBD[^\]]*\]/gi, '<span class="tag tag-warn">$&</span>').replace(/\[(?:Hold Point\s*-\s*H|Witness Point\s*-\s*W|H|W)\]/gi, '<span class="tag">$&</span>');
+  }
+  function parseMd(md) {
+    const ls = String(md || "").split(/\r?\n/), bs = [];
+    for (let i = 0; i < ls.length;) {
+      const l = ls[i].trim();
+      if (!l) { i++; continue; }
+      if (/^---+$/.test(l)) { bs.push({ t: "hr" }); i++; continue; }
+      if (l.startsWith("|") && ls[i + 1] && ls[i + 1].trim().startsWith("|")) {
+        const rows = [];
+        while (i < ls.length && ls[i].trim().startsWith("|")) {
+          const cs = ls[i].trim().replace(/^\|/, "").replace(/\|$/, "").split("|").map(c => c.trim());
+          if (!cs.every(c => /^:?-+:?$/.test(c))) rows.push(cs);
+          i++;
+        }
+        if (rows.length) bs.push({ t: "tbl", rows });
+        continue;
+      }
+      const hm = l.match(/^(#{1,3})\s+(.+)$/);
+      if (hm) { bs.push({ t: "h" + hm[1].length, v: hm[2] }); i++; continue; }
+      if (/^[-*]\s+/.test(l)) {
+        const items = [];
+        while (i < ls.length && /^[-*]\s+/.test(ls[i].trim())) { items.push(ls[i++].trim().replace(/^[-*]\s+/, "")); }
+        bs.push({ t: "ul", items }); continue;
+      }
+      if (/^\d+\.\s+/.test(l)) {
+        const items = [];
+        while (i < ls.length && /^\d+\.\s+/.test(ls[i].trim())) { items.push(ls[i++].trim().replace(/^\d+\.\s+/, "")); }
+        bs.push({ t: "ol", items }); continue;
+      }
+      bs.push({ t: "p", v: l }); i++;
+    }
+    return bs;
+  }
+
+  function drawPreview() {
+    const raw = document.getElementById("md-ed").value;
+    document.getElementById("wc-txt").textContent = (raw.trim() ? raw.trim().split(/\s+/).length : 0) + " từ";
+    const bs = parseMd(raw);
+    const pv = document.getElementById("pv-box");
+    if (!bs.length) { pv.innerHTML = ""; return; }
+    pv.innerHTML = bs.map(b => {
+      if (b.t === "hr") return "<hr style='margin:10px 0;border:none;border-top:1px solid #cbd5e1;'/>";
+      if (b.t === "h1" || b.t === "h2" || b.t === "h3") return `<${b.t}>${inlineHtml(b.v)}</${b.t}>`;
+      if (b.t === "p") return `<p>${inlineHtml(b.v)}</p>`;
+      if (b.t === "ul") return `<ul>${b.items.map(x => `<li>${inlineHtml(x)}</li>`).join("")}</ul>`;
+      if (b.t === "ol") return `<ol>${b.items.map(x => `<li>${inlineHtml(x)}</li>`).join("")}</ol>`;
+      if (b.t === "tbl") return `<table><thead><tr>${b.rows[0].map(c => `<th>${inlineHtml(c)}</th>`).join("")}</tr></thead><tbody>${b.rows.slice(1).map(r => `<tr>${r.map(c => `<td>${inlineHtml(c)}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
+      return "";
+    }).join("");
+  }
+
+  async function downloadWord() {
+    const raw = document.getElementById("md-ed").value.trim();
+    if (!raw) { alert("Hãy viết quy trình ở Tab 3 trước!"); return; }
+    const m = meta(), bs = parseMd(raw), today = new Date().toLocaleDateString("en-GB");
+
+    if (window.docx) {
+      const { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, AlignmentType, BorderStyle, Header, Footer, PageNumber, ShadingType, PageBreak } = window.docx;
+      const bdr = { top: { style: BorderStyle.SINGLE, size: 4, color: "94A3B8" }, bottom: { style: BorderStyle.SINGLE, size: 4, color: "94A3B8" }, left: { style: BorderStyle.SINGLE, size: 4, color: "94A3B8" }, right: { style: BorderStyle.SINGLE, size: 4, color: "94A3B8" } };
+      const runs = (s, sz = 22, bold = false, col = "1E293B") => String(s || "").split(/(\*\*[^*]+\*\*)/g).filter(Boolean).map(p => {
+        const b = p.startsWith("**") && p.endsWith("**");
+        return new TextRun({ text: (b ? p.slice(2, -2) : p).replace(/\*/g, "").replace(/\s+/g, " "), font: "Arial", size: sz, bold: bold || b, color: col });
+      });
+      const mkTbl = rows => new Table({
+        width: { size: 100, type: WidthType.PERCENTAGE },
+        rows: rows.map((r, rI) => new TableRow({
+          children: r.map(c => new TableCell({ borders: bdr, shading: rI === 0 ? { fill: "E2E8F0", type: ShadingType.CLEAR } : undefined, margins: { top: 80, bottom: 80, left: 110, right: 110 }, children: [new Paragraph({ children: runs(stripMd(c), 20, rI === 0) })] }))
+        }))
+      });
+      const ch = [
+        new Paragraph({ spacing: { before: 800, after: 200 }, alignment: AlignmentType.CENTER, children: runs(m.client.toUpperCase(), 26, true, "0369A1") }),
+        new Paragraph({ spacing: { after: 300 }, alignment: AlignmentType.CENTER, children: runs(m.proj.toUpperCase(), 32, true, "0F172A") }),
+        new Paragraph({ spacing: { after: 700 }, alignment: AlignmentType.CENTER, children: runs(m.title, 28, true, "0284C7") }),
+        mkTbl([["Field", "Document Control"], ["Document No.", m.docNo], ["Revision", m.rev], ["Client", m.client], ["Contractor", m.contractor], ["Date", today]]),
+        new Paragraph({ children: [new PageBreak()] }),
+        new Paragraph({ spacing: { after: 200 }, children: runs("REVISION HISTORY", 26, true, "0369A1") }),
+        mkTbl([["Rev", "Date", "Description", "Prepared", "Checked", "Approved"], [m.rev, today, "Issued for ITB / Review", "Project Eng.", "Lead Eng.", "Project Mgr."]]),
+        new Paragraph({ spacing: { after: 240 }, text: "" })
+      ];
+      bs.forEach(b => {
+        if (b.t === "h1" || b.t === "h2" || b.t === "h3") ch.push(new Paragraph({ spacing: { before: 220, after: 100 }, children: runs(stripMd(b.v), b.t === "h1" ? 28 : b.t === "h2" ? 25 : 23, true, "0369A1") }));
+        else if (b.t === "p") ch.push(new Paragraph({ spacing: { before: 70, after: 100, line: 276 }, children: runs(b.v) }));
+        else if (b.t === "ul") b.items.forEach(x => ch.push(new Paragraph({ bullet: { level: 0 }, spacing: { after: 60 }, children: runs(x) })));
+        else if (b.t === "ol") b.items.forEach((x, idx) => ch.push(new Paragraph({ spacing: { after: 60 }, children: runs((idx + 1) + ". " + x) })));
+        else if (b.t === "tbl") { ch.push(mkTbl(b.rows)); ch.push(new Paragraph({ spacing: { after: 120 }, text: "" })); }
+      });
+      const doc = new Document({
+        sections: [{
+          headers: { default: new Header({ children: [new Paragraph({ alignment: AlignmentType.RIGHT, children: runs(`${m.proj} | ${m.docNo} | ${m.rev}`, 18, false, "64748B") })] }) },
+          footers: { default: new Footer({ children: [new Paragraph({ alignment: AlignmentType.RIGHT, children: [new TextRun({ text: "Page ", font: "Arial", size: 18 }), new TextRun({ children: [PageNumber.CURRENT], font: "Arial", size: 18 })] })] }) },
+          children: ch
+        }]
+      });
+      const blob = await Packer.toBlob(doc);
+      const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `${m.docNo}_${m.rev}.docx`; a.click();
+      notify("Đã tải xuống file Word (.docx) chuẩn kỹ thuật!");
+    } else {
+      const html = "\ufeff<div style='font-family:Arial;font-size:11pt;'>" + document.getElementById("pv-box").innerHTML + "</div>";
+      const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([html], { type: "application/msword" })); a.download = `${m.docNo}_${m.rev}.doc`; a.click();
+      notify("Đã tải xuống file Word!");
+    }
+  }
+
+  function exportExcel(sheets, filename) {
+    if (window.XLSX) {
+      const wb = window.XLSX.utils.book_new();
+      sheets.forEach(s => window.XLSX.utils.book_append_sheet(wb, window.XLSX.utils.aoa_to_sheet(s.rows), s.name));
+      window.XLSX.writeFile(wb, filename + ".xlsx");
+    } else {
+      const csv = sheets[0].rows.map(r => r.map(c => `"${String(c || "").replace(/"/g, '""')}"`).join(",")).join("\n");
+      const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob(["\ufeff" + csv], { type: "text/csv" })); a.download = filename + ".csv"; a.click();
+    }
+    notify("Đã tải xuống file bảng tính thành công!");
+  }
+
+  // GẮN KẾT SỰ KIỆN
+  document.querySelectorAll(".tab-btn").forEach(b => b.addEventListener("click", () => goTab(b.dataset.tab)));
+  document.getElementById("btn-toast-x").addEventListener("click", () => document.getElementById("toast").classList.add("hide"));
+  document.getElementById("btn-api").addEventListener("click", () => document.getElementById("api-bar").classList.toggle("hide"));
+  document.getElementById("btn-save-key").addEventListener("click", () => {
+    userKey = document.getElementById("inp-key").value.trim();
+    try { localStorage.setItem("epci_key", userKey); } catch (e) {}
+    document.getElementById("api-bar").classList.add("hide");
+    notify("Đã lưu cấu hình API!");
+  });
+  document.getElementById("btn-meta-toggle").addEventListener("click", function() {
+    const h = document.getElementById("meta-wrap").classList.toggle("hide");
+    this.textContent = h ? "Mở rộng ▼" : "Thu gọn ▲";
+  });
+  ["m-proj", "m-docno", "m-rev"].forEach(id => document.getElementById(id).addEventListener("input", () => {
+    const m = meta();
+    document.getElementById("sum-proj").textContent = m.proj;
+    document.getElementById("sum-doc").textContent = m.docNo;
+    document.getElementById("sum-rev").textContent = m.rev;
+  }));
+
+  const dz = document.getElementById("dropzone");
+  dz.addEventListener("dragover", e => { e.preventDefault(); dz.classList.add("over"); });
+  dz.addEventListener("dragleave", () => dz.classList.remove("over"));
+  dz.addEventListener("drop", e => { e.preventDefault(); dz.classList.remove("over"); addFiles(e.dataTransfer.files); });
+  document.getElementById("file-input").addEventListener("change", e => { addFiles(e.target.files); e.target.value = ""; });
+  document.getElementById("btn-sample").addEventListener("click", loadSamples);
+  document.getElementById("btn-clear").addEventListener("click", () => { files = []; drawFiles(); });
+  document.getElementById("btn-scan").addEventListener("click", runScan);
+  document.getElementById("btn-rescan").addEventListener("click", runScan);
+  document.getElementById("btn-go-t3").addEventListener("click", () => goTab("t3"));
+  document.getElementById("btn-add-tq").addEventListener("click", () => {
+    if (!scan) scan = { sow: "", codes: "", deliverables: "", risks: "", tqList: [], compList: [] };
+    const q = prompt("Nhập câu hỏi làm rõ kỹ thuật (TQ):");
+    if (q && q.trim()) { scan.tqList.push({ id: "TQ-00" + (scan.tqList.length + 1), discipline: "Engineering", ref: "[Manual]", question: q.trim(), impact: "Clarify before Award" }); drawScan(); }
+  });
+  document.getElementById("btn-xlsx-tq").addEventListener("click", () => {
+    if (!scan) { alert("Hãy chạy Phân tích ITB trước!"); return; }
+    const m = meta();
+    exportExcel([
+      { name: "TQ Register", rows: [["PROJECT:", m.proj], ["TQ No.", "Discipline", "Reference", "Technical Query", "Impact"], ...scan.tqList.map(t => [t.id, t.discipline, t.ref, t.question, t.impact])] },
+      { name: "Compliance Matrix", rows: [["Item", "Requirement", "Reference", "Status", "Contractor Note"], ...scan.compList.map(c => [c.no, c.req, c.ref, c.status, c.note])] }
+    ], m.docNo + "_TQ_Compliance");
+  });
+
+  document.getElementById("btn-scan-tpl").addEventListener("click", () => scanTemplate(null, false));
+  document.getElementById("btn-reset-out").addEventListener("click", () => { outline = STD_OUTLINE.slice(); drawOutline(); });
+  document.getElementById("btn-add-sec").addEventListener("click", () => {
+    const inp = document.getElementById("inp-sec");
+    if (inp.value.trim()) { outline.push(inp.value.trim()); inp.value = ""; drawOutline(); }
+  });
+  document.getElementById("btn-gen").addEventListener("click", generateProcedure);
+  document.getElementById("md-ed").addEventListener("input", drawPreview);
+  document.querySelectorAll(".btn-ins").forEach(b => b.addEventListener("click", function() {
+    const ed = document.getElementById("md-ed"), s = ed.selectionStart || 0;
+    ed.value = ed.value.slice(0, s) + " " + this.dataset.ins + " " + ed.value.slice(ed.selectionEnd || 0);
+    ed.focus(); drawPreview();
+  }));
+  document.getElementById("btn-docx").addEventListener("click", downloadWord);
+  document.getElementById("btn-xlsx-raci").addEventListener("click", () => {
+    const m = meta(), tbls = parseMd(document.getElementById("md-ed").value).filter(b => b.t === "tbl").map(b => b.rows.map(r => r.map(stripMd)));
+    exportExcel([
+      { name: "RACI Matrix", rows: tbls.find(t => /raci|ocm/i.test(JSON.stringify(t))) || [["Activity", "OCM", "Lead Eng.", "Client"], ["PLEM Installation", "A", "R", "W"]] },
+      { name: "ITP Checklists", rows: tbls.find(t => /itp|acceptance/i.test(JSON.stringify(t))) || [["ITP No.", "Stage", "Criteria", "Client"], ["ITP-01", "24h Hydrotest", "Zero leak", "H"]] }
+    ], m.docNo + "_RACI_ITP");
+  });
+  document.getElementById("btn-copy").addEventListener("click", () => {
+    const html = document.getElementById("pv-box").innerHTML.replace(/<table>/g, "<table border='1' cellpadding='6' style='border-collapse:collapse;width:100%;'>");
+    const box = document.createElement("div"); box.contentEditable = "true"; box.style.position = "fixed"; box.style.left = "-9999px"; box.innerHTML = html;
+    document.body.appendChild(box);
+    const r = document.createRange(); r.selectNodeContents(box);
+    const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+    document.execCommand("copy"); sel.removeAllRanges(); document.body.removeChild(box);
+    notify("Đã copy Rich Text chuẩn! Dán thẳng (Ctrl+V) sang Google Docs hoặc Email.");
+  });
+  document.getElementById("btn-mod-x").addEventListener("click", () => document.getElementById("modal").classList.add("hide"));
+
+  drawOutline();
+})();
+</script>
+</body>
+</html>
